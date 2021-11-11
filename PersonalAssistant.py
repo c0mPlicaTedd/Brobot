@@ -24,6 +24,7 @@ import threading
 import subprocess
 import datetime
 from tkinter import colorchooser
+from pynput.keyboard import Key, Controller
 
 window = Tk()
 
@@ -32,6 +33,7 @@ global user_response
 global bot_confirmation
 global voice_data 
 global receiver_num
+global receiver_message
 voice_data = None
 global isClicked
 isClicked = False
@@ -39,6 +41,8 @@ global volume
 volume = 100
 global bgcolor 
 bgcolor = "#0f212c"
+global wcount
+wcount = 0 
 
 global voice
 voice = None
@@ -46,10 +50,12 @@ bot_response = StringVar()
 user_response = StringVar()
 bot_confirmation = StringVar()
 receiver_num = StringVar()
+receiver_message = StringVar()
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 driver = webdriver.Chrome("C:\\chromedriver_win32\\chromedriver.exe",chrome_options=chrome_options)
+
 
 class person:
     name = ''
@@ -61,9 +67,9 @@ class brobot:
     def setName(self, name):
         self.name = name
 
-def submit():
-    global isClicked
-    isClicked = True
+def swap(frame):
+    frame.tkraise()
+
 
 
 def engine_speak(text):
@@ -255,27 +261,7 @@ def respond(voice_data):
         threading.Thread(target=swap(homeScreen)).start()
 
 
-    elif voice_data in ["whatsapp","text"]:
-        global isClicked
-        bot_response.set("Enter the number you want to whatsapp")
-        threading.Thread(target=window.update()).start()
-        threading.Thread(target=engine_speak("Enter the number you want to whatsapp")).start()
-        #threading.Thread(target=swap(whatsappScreen)).start()
-        number_entry = Entry(homeScreen, textvariable = receiver_num)
-        number_entry.place(x=20,y=250)
-        threading.Thread(target=window.update()).start()
-        submit_btn = Button(homeScreen,text = "Submit", command = submit())
-        submit_btn.place(x=150,y=250)
-        if isClicked is True: #is clicked is getting true phele se hi idk how fix that issue.
-            print(isClicked)
-            number = number_entry.get()
-            #threading.Thread(target=swap(homeScreen)).start()
-            bot_response.set("Say the message you want to send")
-            threading.Thread(target=window.update()).start()
-            threading.Thread(target=engine_speak("Say the message you want to send")).start()
-            message = record_audio('')
-            url = 'https://web.whatsapp.com/send?phone='+number+'&text='+message
-            webbrowser.get().open(url)
+    
               
     elif voice_data in ["open notepad","write this down","note","take a note"]:
         date = datetime.datetime.now()
@@ -321,9 +307,42 @@ def respond(voice_data):
         window.update()
         driver.close()
 
+    elif "whatsapp" in voice_data:
+        bot_response.set("Okay, loading things up")
+        threading.Thread(target=engine_speak("Okay, loading things up")).start()
+        whatsapppopup()
+        
+    elif "details done" in voice_data:
+        print(number_entry.get())
 
-def swap(frame):
-    frame.tkraise()
+
+def whatsapppopup():
+    global wcount
+    number = 0
+    swap(popupScreen)
+    threading.Thread(target=engine_speak("Kindly enter the details")).start()
+    bot_response.set("Kindly enter the details")
+    
+
+def pause():
+    time.sleep(0.1)
+
+def submit():
+    receiver_num = number_entry.get()
+    receiver_message = message_entry.get()
+    print(receiver_num)
+    print(receiver_message)
+    threading.Thread(target=engine_speak("Sending the message")).start()
+    bot_response.set("Sending the message") 
+    url = 'https://web.whatsapp.com/send?phone='+receiver_num+'&text='+receiver_message
+    webbrowser.get().open(url)
+    swap(homeScreen)
+    time.sleep(10)
+    k = Controller()
+    k.press(Key.enter)
+    threading.Thread(target=engine_speak("Message sent")).start()
+    bot_response.set("Message sent")
+
     
 def saved():
     global bgcolor
@@ -354,20 +373,32 @@ person_obj.name = ""
 engine = pyttsx3.init()
 
 
+#******************POPUPSCREEN**************************
+popupScreen = Frame(window,width = 400, height = 500, bg = bgcolor)
+number_entry = Entry(popupScreen, textvariable = receiver_num)
+number_entry.place(x=180,y=100)
+message_entry = Entry(popupScreen, textvariable = receiver_message)
+message_entry.place(x=200,y=200)
+submit_btn = Button(popupScreen,text = "Submit", command = lambda: submit())
+submit_btn.place(x=300,y=450)
+back = Button(popupScreen, text = "back", command = lambda: swap(homeScreen))
+back.config(font=("Courier", 8))
+back.place(x=50, y =450)
+#************************************************************
+
+
+#**********************SETTING SCREEN****************************************
 settingScreen = Frame(window,width = 400, height = 500, bg = bgcolor)
 back = Button(settingScreen, text = "back", command = lambda: swap(homeScreen))
 back.config(font=("Courier", 8))
 back.place(x=50, y =450)
-
 canvas3 = Canvas(settingScreen,width=500,height=50,bg = '#0f212c').place(x=-10,y=-20)
 setting_txt = Label(settingScreen,text = "Settings", bg = '#0f212c')
 setting_txt.config(font=("",15),fg = 'white')
 setting_txt.pack(side = "top")
-
 save = Button(settingScreen,text='save',command =lambda: saved())
 save.config(font=("Courier",8))
 save.place(x=300,y=450)
-
 bot_voices = ['Male','Female']
 voicevar = StringVar(window)
 voicevar.set('Female')
@@ -376,14 +407,12 @@ voice_txt= Label(settingScreen, text="Bot Voice",bg = '#0f212c')
 voice_txt.config(fg='white')
 voice_txt.place(x = 100, y = 100)
 voices_menu.place(x=180, y = 100)
-
 volume_slider = Scale(settingScreen, from_=0 ,to = 100,orient = HORIZONTAL)
 volume_slider.set("100")
 volume_txt = Label(settingScreen,text = "Bot Volume", bg ='#0f212c')
 volume_txt.config(fg='white')
 volume_txt.place(x=50,y=200)
 volume_slider.place(x=200,y=200)
-
 var = IntVar()
 darktheme_btn = Radiobutton(settingScreen,text="Dark",variable= var,value = 1).place(x=150,y=300)
 lighttheme_btn = Radiobutton(settingScreen,text="Light",variable= var,value = 2).place(x=250,y=300)
@@ -391,6 +420,7 @@ var.set(1)
 theme_txt=Label(settingScreen,text="Theme", bg ='#0f212c')
 theme_txt.config(fg="white")
 theme_txt.place(x=50,y=300)
+#***************************************************************************
 
 
 homeScreen = Frame(window,width = 400, height = 500, bg = bgcolor)
@@ -418,13 +448,9 @@ settings = Button(homeScreen, text = "settings", command = lambda: swap(settingS
 settings.config(font=("", 8))
 settings.place(x=310, y =425)
 
-whatsappScreen = Frame(window,width = 400 , height = 500,bg = '#0f212c')
-number_entry = Entry(whatsappScreen, textvariable = receiver_num)
-number_entry.place(x=200,y=250)
-
 assitant_voice_text = Text(settingScreen)
 
-for frame in (homeScreen,settingScreen,whatsappScreen):
+for frame in (homeScreen,settingScreen,popupScreen):
     frame.grid(row=0,column=0, sticky = 'news')
 
 threading.Thread(target=homeScreen.tkraise()).start()
@@ -433,12 +459,11 @@ threading.Thread(target=engine_speak("Hello, how may i help you?")).start()
 
 def voice():
         global voice_data
-        while(1):
+        while(True):
             voice_data = record_audio("")
             threading.Thread(target=respond(voice_data)).start()
 
 threading.Thread(target=voice()).start()
 
 threading.Thread(target=mainloop()).start()  
-
 
