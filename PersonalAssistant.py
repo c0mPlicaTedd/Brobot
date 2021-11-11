@@ -30,7 +30,7 @@ import mathfunctions
 
 window = Tk()
 
-#some variables and their initialization
+#global variables and their initialization
 global bot_response
 global user_response
 global bot_confirmation
