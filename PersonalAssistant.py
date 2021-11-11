@@ -107,7 +107,7 @@ def engine_speak(audio_string):
     voices = engine.getProperty('voices')
     engine.setProperty('voice', voices[0].id)
     if voice == 'Male':
-        engine.setProperty('voice', voices[0].id)
+        engine.setProperty('voice', voices[1].id)
     engine.setProperty('rate', 150)
     engine.setProperty('volume', volume)
     bot_confirmation.set("Speaking...")
@@ -311,6 +311,8 @@ def respond(voice_data):
 
     #tells you my sub count
     elif voice_data in ["sub count","what is my sub count","how many subscribers do i have","how many subs do i have"]:
+        bot_response.set("Let me check")
+        threading.Thread(target=engine_speak("Let me check")).start()
         url = "https://www.youtube.com/c/c0mplicated"
         driver.get(url)
         subcount = selenium(url,"subscriber-count")
