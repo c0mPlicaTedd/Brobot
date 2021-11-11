@@ -30,6 +30,7 @@ import mathfunctions
 
 window = Tk()
 
+#some variables and their initialization
 global bot_response
 global user_response
 global bot_confirmation
@@ -45,7 +46,6 @@ global bgcolor
 bgcolor = "#0f212c"
 global wcount
 wcount = 0 
-
 global voice
 voice = None
 bot_response = StringVar()
@@ -54,38 +54,39 @@ bot_confirmation = StringVar()
 receiver_num = StringVar()
 receiver_message = StringVar()
 
+#some selenium stuff
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 driver = webdriver.Chrome("C:\\chromedriver_win32\\chromedriver.exe",chrome_options=chrome_options)
 
 
-class person:
+class person: #to remember your name
     name = ''
     def setName(self, name):
         self.name = name
 
-class brobot:
+class brobot: #to remember his name
     name = ''
     def setName(self, name):
         self.name = name
 
-def swap(frame):
+def swap(frame): #swaps frame
     frame.tkraise()
 
-def tohomescreen():
+def tohomescreen(): #function made to fix a bit of lag
     swap(homeScreen)
-def tosettingscreen():
+def tosettingscreen(): #function made to fix a bit of lag
     swap(settingScreen)
 
 
-def engine_speak(text):
+def engine_speak(text): #speaks the replies
     text = str(text)
     threading.Thread(target=engine.say(text)).start()
     threading.Thread(target=engine.runAndWait()).start()
 
 
-def record_audio(ask=""):
-    with sr.Microphone() as source: # microphone as source
+def record_audio(ask=""): #records audio from your mic
+    with sr.Microphone() as source: 
         if ask:
             threading.Thread(target=engine_speak(ask)).start()
         audio = sr.Recognizer().listen(source, timeout=None, phrase_time_limit= 7)
@@ -96,23 +97,23 @@ def record_audio(ask=""):
             voice_data = sr.Recognizer().recognize_google(audio)
             threading.Thread(target=user_response.set(voice_data)).start() 
             threading.Thread(target=window.update()).start()
-        except sr.UnknownValueError: # error: recognizer does not understand
+        except sr.UnknownValueError: 
             print("I did not get that!")
         except sr.RequestError:
-            engine_speak('Sorry, the service is down') # error: recognizer is not connected
-        print(">>", voice_data.lower()) # print what user said
+            engine_speak('Sorry, the service is down') 
+        print(">>", voice_data.lower()) 
         
         
         return voice_data.lower()
 
-def selenium(url,id):
+def selenium(url,id): #for selenium?? idk if this is used
     driver.get(url)
     data = driver.find_element_by_id(id).text
     return data
 
 
 
-def engine_speak(audio_string):
+def engine_speak(audio_string): #bot speaking function and properties
     global voice
     audio_string = str(audio_string)
     engine = pyttsx3.init()
@@ -130,56 +131,54 @@ def engine_speak(audio_string):
     bot_confirmation.set("Listening...")
     window.update()
 
-def respond(voice_data):
-    # 1: greeting
-    if 'hello' in voice_data:
-        greetings = ["hey, how can I help you", "hey, what's up?", "I'm listening", "how can I help you?", "hello"]
+def respond(voice_data): #set of commands it responds to
+    
+    if 'hello' in voice_data: #greetings
+        greetings = ["hey", "hey, what's up?", "I'm listening", "how can I help you?", "hello"]
         greet = random.randint(0,len(greetings)-1)
         bot_response.set(greetings[greet])
         window.update()
         threading.Thread(target=engine_speak(greetings[greet])).start()
 
-    # 2: name
-    if 'what is your name' in voice_data:
+    
+    if 'what is your name' in voice_data: #tells you his name
             bot_response.set(f"My name is {brobot_obj.name}. what's your name?")
             window.update()
             threading.Thread(target=engine_speak(f"My name is {brobot_obj.name}. what's your name?")).start() #incase you haven't provided your name.
 
-    if 'my name is' in voice_data:
+    if 'my name is' in voice_data: #remembers your name
         person_name = voice_data.split("is")[-1].strip()
         bot_response.set("okay, i will remember that " + person_name)
         window.update()
         threading.Thread(target=engine_speak("okay, i will remember that " + person_name)).start()
         person_obj.setName(person_name) # remember name in person object
     
-    if 'what is my name' in voice_data:
+    if 'what is my name' in voice_data: #tells you your name, if told
         bot_response.set("Your name must be " + person_obj.name)
         window.update()
         threading.Thread(target=engine_speak("Your name must be " + person_obj.name)).start()
     
-    if 'change your name to' in voice_data:
+    if 'change your name to' in voice_data: #changes his name to xyz
         asis_name = voice_data.split("to")[-1].strip()
         bot_response.set("okay, i will remember that my name is " + asis_name)
         window.update()
         threading.Thread(target=engine_speak("okay, i will remember that my name is " + asis_name)).start()
         brobot_obj.setName(asis_name) # remember name in asis object
 
-    # 3: greeting
-    if voice_data in ["how are you","how are you doing"]:
+    if voice_data in ["how are you","how are you doing"]: #some random personal health answers
         bot_response.set("I'm very well, thanks for asking " + person_obj.name)
         window.update()
         threading.Thread(target=engine_speak("I'm very well, thanks for asking " + person_obj.name)).start()
 
-    # 4: time
-    if 'time' in voice_data:
+    
+    if 'time' in voice_data: #tells the current time
         current_time = datetime.datetime.now()
         time = current_time.strftime("%H") + " hours and " + current_time.strftime("%M") + " minutes"
         bot_response.set(time)
         window.update()
         threading.Thread(target=engine_speak(time)).start()
 
-    # 5: search google
-    if 'search for' in voice_data and 'youtube' not in voice_data:
+    if 'search for' in voice_data and 'youtube' not in voice_data: #searches for xyz thing on google
         search_term = voice_data.split("for")[-1]
         url = "https://google.com/search?q=" + search_term
         webbrowser.get().open(url)
@@ -187,9 +186,7 @@ def respond(voice_data):
         window.update()
         threading.Thread(target=engine_speak("Here is what I found for" + search_term + " on google")).start()
     
-
-    # 6: search youtube
-    if 'youtube' in voice_data:
+    if 'youtube' in voice_data: #searches for xyz thing on youtube
         search_term = voice_data.split("for")[-1]
         search_term = search_term.replace("on youtube","").replace("search","")
         url = "https://www.youtube.com/results?search_query=" + search_term
@@ -198,9 +195,7 @@ def respond(voice_data):
         window.update()
         threading.Thread(target=engine_speak("Here is what I found for " + search_term + " on youtube")).start()
   
-    
-     #9 weather
-    if 'weather' in voice_data:
+    if 'weather' in voice_data: #shows the weather outside
         search_term = voice_data.split("for")[-1]
         url = "https://www.google.com/search?sxsrf=ACYBGNSQwMLDByBwdVFIUCbQqya-ET7AAA%3A1578847393212&ei=oUwbXtbXDN-C4-EP-5u82AE&q=weather&oq=weather&gs_l=psy-ab.3..35i39i285i70i256j0i67l4j0i131i67j0i131j0i67l2j0.1630.4591..5475...1.2..2.322.1659.9j5j0j1......0....1..gws-wiz.....10..0i71j35i39j35i362i39._5eSPD47bv8&ved=0ahUKEwiWrJvwwP7mAhVfwTgGHfsNDxsQ4dUDCAs&uact=5"
         webbrowser.get().open(url)
@@ -209,8 +204,8 @@ def respond(voice_data):
         threading.Thread(target=engine_speak("Here is what I found for on google")).start()
      
 
-     #11 toss a coin
-    if voice_data in ["toss a coin","flip a coin","coin"]:
+    
+    if voice_data in ["toss a coin","flip a coin","coin"]: #tosses a coin
         moves=["head", "tails"]   
         cmove=random.choice(moves)
         threading.Thread(target=engine_speak("Tossing...")).start()
@@ -219,55 +214,51 @@ def respond(voice_data):
         bot_response.set("Its " + cmove)
         window.update()
 
-    #exit
-    if voice_data in ["exit", "quit"]:
+    
+    if voice_data in ["exit", "quit"]: #exit
         bot_response.set("bye")
         window.update()
         threading.Thread(target=engine_speak("bye")).start()
         threading.Thread(target=exit()).start()
 
-   # Current location as per Google maps
-    if 'what is my exact location' in voice_data:
+   
+    if 'what is my exact location' in voice_data: #Current location as per Google maps
         url = "https://www.google.com/maps/search/Where+am+I+?/"
         webbrowser.get().open(url)
         bot_response.set("You must be somewhere near here, as per Google maps")
         window.update()
         threading.Thread(target=engine_speak("You must be somewhere near here, as per Google maps")).start()
 
-    #date
-    if voice_data in ["what is today's date", "what is the date today", "date"]:
+    
+    if voice_data in ["what is today's date", "what is the date today", "date"]: #today's date
         bot_response.set(today.strftime("%B %d, %Y"))
         window.update()
         threading.Thread(target=engine_speak(today.strftime("%B %d, %Y"))).start()
 
-    #great compliment
-    if voice_data in ["great","interesting","wow","awesome","nice"]:
+    if voice_data in ["great","interesting","wow","awesome","nice"]: #some random replies
         bot_response.set("I know right")
         window.update()
         threading.Thread(target=engine_speak("I know right")).start()
-
-
-    #thanks
-    if voice_data in ["thanks","thank","thank you"]:
+    
+    if voice_data in ["thanks","thank","thank you"]: #thanks
         bot_response.set("You're welcome!")
         window.update()
         threading.Thread(target=engine_speak("You're welcome!")).start()
      
-    #open brobot settings
-    if voice_data in ["open settings", "open setting"]:
+    if voice_data in ["open settings", "open setting"]: #open brobot settings
         bot_response.set("Opening settings...")
         window.update()
         threading.Thread(target=engine_speak("Opening settings...")).start()
         threading.Thread(target=swap(settingScreen)).start()
 
-    #return to brobot homescreen
-    if voice_data in ["go back", "go back to home screen", "return to home screen"]:
+    
+    if voice_data in ["go back", "go back to home screen", "return to home screen"]: #return to brobot homescreen
         bot_response.set("Returning to home screen.")
         window.update()
         threading.Thread(target=engine_speak("Returning to home screen .")).start()
         threading.Thread(target=swap(homeScreen)).start()
               
-    if voice_data in ["open notepad","write this down","note","take a note"]:
+    if voice_data in ["open notepad","write this down","note","take a note"]: #opens notepad and notes whatever u say
         date = datetime.datetime.now()
         file_name = str(date).replace(":","-")+ "-note.txt"
         bot_response.set("What do you want me to note down?")
@@ -278,29 +269,28 @@ def respond(voice_data):
             f.write(text)
         threading.Thread(target=subprocess.Popen(["notepad.exe",file_name])).start()
     
-    if voice_data in ["open zoom","class time"]:
+    if voice_data in ["open zoom","class time"]: #opens zoom
         bot_response.set("Opening zoom...")
         window.update()
         threading.Thread(target=engine_speak("Opening zoom")).start()
         zoom = r"C:\Users\Jash\AppData\Roaming\Zoom\bin\zoom.exe"
         threading.Thread(target=subprocess.Popen(zoom)).start()
 
-    if voice_data in ["calculate","open calculator","math"]:
+    if voice_data in ["calculate","open calculator","math"]: #opens calculator
         bot_response.set("Opening calculator...")
         window.update()
         threading.Thread(target=engine_speak("Opening calculator")).start()
         calculator = "C:\Windows\System32\calc.exe"
         threading.Thread(target=subprocess.Popen(calculator)).start()
 
-    if 'roll a die' in voice_data:
+    if 'roll a die' in voice_data: #rolls a die
         number = random.randrange(1,6)
         threading.Thread(target=engine_speak("Rolling...")).start()
         bot_response.set("Its "+str(number))
         threading.Thread(target=engine_speak("Its "+str(number))).start()
         window.update()
 
-    #tells you my sub count
-    if voice_data in ["sub count","what is my sub count","how many subscribers do i have","how many subs do i have"]:
+    if voice_data in ["sub count","what is my sub count","how many subscribers do i have","how many subs do i have"]: #tells you my sub count
         bot_response.set("Let me check")
         threading.Thread(target=engine_speak("Let me check")).start()
         url = "https://www.youtube.com/c/c0mplicated"
@@ -311,13 +301,12 @@ def respond(voice_data):
         window.update()
         driver.close()
 
-    #send message using whatsapp, must be logged in
-    if "whatsapp" in voice_data:
+    if "whatsapp" in voice_data: #send message using whatsapp, must be logged in
         bot_response.set("Okay, loading things up")
         threading.Thread(target=engine_speak("Okay, loading things up")).start()
         whatsapppopup()
 
-    if "what is" in voice_data and "factorial" not in voice_data and "root" not in voice_data:
+    if "what is" in voice_data and "factorial" not in voice_data and "root" not in voice_data:  #basic math functions
         try:
             result = mathfunctions.basic(voice_data)
             bot_response.set(result)
@@ -326,7 +315,7 @@ def respond(voice_data):
             bot_response.set("Can you say that again?")
             threading.Thread(target=engine_speak("Can you say that again?")).start()
 
-    if "what is" in voice_data and "factorial" in voice_data:
+    if "what is" in voice_data and "factorial" in voice_data: #factorials
         try:
             voice_data=voice_data.replace("what is","")
             voice_data=voice_data.replace("factorial","")
@@ -341,7 +330,7 @@ def respond(voice_data):
             bot_response.set("Can you say that again?")
             threading.Thread(target=engine_speak("Can you say that again?")).start()
 
-    if "what is" in voice_data and "root" in voice_data:
+    if "what is" in voice_data and "root" in voice_data: #nth roots
         try:
             result = mathfunctions.roots(voice_data)
             bot_response.set(result)
@@ -350,12 +339,8 @@ def respond(voice_data):
             bot_response.set("Can you say that again?")
             threading.Thread(target=engine_speak("Can you say that again?")).start()
 		
-        
- 
 
-
-
-def whatsapppopup():
+def whatsapppopup(): #whatsappp screen switch
     global wcount
     number = 0
     swap(popupScreen)
@@ -363,10 +348,7 @@ def whatsapppopup():
     bot_response.set("Kindly enter the details")
     
 
-def pause():
-    time.sleep(0.1)
-
-def submit():
+def submit(): #whatsapp submit button
     receiver_num = number_entry.get()
     receiver_message = message_entry.get()
     print(receiver_num)
@@ -383,7 +365,7 @@ def submit():
     bot_response.set("Message sent")
 
     
-def saved():
+def saved(): #settings saved button
     global bgcolor
     global voice
     global volume
@@ -459,45 +441,41 @@ var.set(1)
 theme_txt=Label(settingScreen,text="Theme", bg ='#0f212c')
 theme_txt.config(fg="white")
 theme_txt.place(x=50,y=300)
+assitant_voice_text = Text(settingScreen)
 #***************************************************************************
 
-
+#****************************HOME SCREEN***********************************
 homeScreen = Frame(window,width = 400, height = 500, bg = bgcolor)
 window.title("Brobot")
-
 user_label = Label(homeScreen, textvariable = user_response, bg = '#41a2dc') 
 user_label.config(font=("", 10))
 user_response.set('')
 user_label.place(x = 380 , y= 100 , anchor = 'e')
-
 bot_label = Label(homeScreen, textvariable = bot_response, bg = '#0073cb')
 bot_label.config(font=("", 10))
 bot_response.set("")
 bot_label.place(x=20, y=150 , anchor = 'w')
-
 canvas = Frame(homeScreen, bg ='#b3b4b1', width = 400 ,height = 200, bd = 0) #grey canvas
 canvas.place(y=380)
-
 bot_label_confirmation = Label(homeScreen , textvariable = bot_confirmation , bg = '#162937')
 bot_label_confirmation.config(font=("", 15) , fg = 'white' ,bd = 15)
 bot_confirmation.set("Listening...")
 bot_label_confirmation.place(x=125, y= 410)
-
 settings = Button(homeScreen, text = "settings", command = lambda: tosettingscreen())
 settings.config(font=("", 8))
 settings.place(x=310, y =425)
+#*****************************************************************************
 
-assitant_voice_text = Text(settingScreen)
 
-for frame in (homeScreen,settingScreen,popupScreen):
+for frame in (homeScreen,settingScreen,popupScreen): #uised so that swap() works properly
     frame.grid(row=0,column=0, sticky = 'news')
 
 
 
-threading.Thread(target=homeScreen.tkraise()).start()
+threading.Thread(target=homeScreen.tkraise()).start() #raise directly to home window
 
 
-def voice():
+def voice(): #listen and record and respond to the voice - infinite loop
         global voice_data
         while(True):
             voice_data = record_audio("")

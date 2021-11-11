@@ -1,6 +1,6 @@
 import math
 
-def basic(voice_data):
+def basic(voice_data): #basic math functions +-*/^
     voice_data = voice_data.replace("what is","")
     voice_data = voice_data.replace("plus","+")
     voice_data = voice_data.replace("minus","-")
@@ -17,7 +17,7 @@ def basic(voice_data):
     final = eval(voice_data)
     return round(final)
 
-def factorial(n):
+def factorial(n): #for factorials
     
     n = int(n)
     if (n==0 or n==1):
@@ -25,7 +25,7 @@ def factorial(n):
     else:
         return n*factorial(n-1)
 
-def roots(voice_data):
+def roots(voice_data): #for nth root
     print("in roots")
     voice_data=voice_data.replace("what is","")
     print(voice_data)
