@@ -19,6 +19,7 @@ import pyttsx3
 from datetime import date
 from tkinter import *
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import threading
 import subprocess
 import datetime
@@ -46,7 +47,9 @@ user_response = StringVar()
 bot_confirmation = StringVar()
 receiver_num = StringVar()
 
-
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+driver = webdriver.Chrome("C:\\chromedriver_win32\\chromedriver.exe",chrome_options=chrome_options)
 
 class person:
     name = ''
@@ -89,6 +92,12 @@ def record_audio(ask=""):
         
         
         return voice_data.lower()
+
+def selenium(url,id):
+    driver.get(url)
+    data = driver.find_element_by_id(id).text
+    return data
+
 
 
 def engine_speak(audio_string):
@@ -299,6 +308,16 @@ def respond(voice_data):
         bot_response.set("Its "+str(number))
         threading.Thread(target=engine_speak("Its "+str(number))).start()
         window.update()
+
+    #tells you my sub count
+    elif voice_data in ["sub count","what is my sub count","how many subscribers do i have","how many subs do i have"]:
+        url = "https://www.youtube.com/c/c0mplicated"
+        driver.get(url)
+        subcount = selenium(url,"subscriber-count")
+        bot_response.set("You have "+subcount)
+        threading.Thread(target=engine_speak("You have "+str(subcount))).start()
+        window.update()
+        driver.close()
 
 
 def swap(frame):
