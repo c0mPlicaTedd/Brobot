@@ -1,4 +1,5 @@
 import math
+from pyaudio import paUInt8
 import speech_recognition as sr # recognise speech
 import playsound # to play an audio file
 from gtts import gTTS # google text to speech
@@ -338,7 +339,63 @@ def respond(voice_data): #set of commands it responds to
         except Exception:
             bot_response.set("Can you say that again?")
             threading.Thread(target=engine_speak("Can you say that again?")).start()
-		
+
+    if "rock paper scissors" in voice_data:
+        answers = ["rock","paper","scissors"]
+        bot_response.set("Okay, together in 3")
+        threading.Thread(target=engine_speak("Okay, together in 3")).start()
+        bot_response.set("3")
+        threading.Thread(target=engine_speak("3")).start()
+        bot_response.set("2")
+        threading.Thread(target=engine_speak("2")).start()
+        bot_response.set("1")
+        threading.Thread(target=engine_speak("1")).start()
+        n = random.randint(0,len(answers)-1)
+        answer = answers[n]
+        user_response = record_audio("")
+        print(user_response)
+        bot_response.set(answer)
+        threading.Thread(target=engine_speak(answer)).start()
+        pause(1)
+        if user_response=="rock":
+            if answer=="rock":
+                bot_response.set("Its a tie!")
+                threading.Thread(target=engine_speak("Its a tie!")).start()
+            elif answer=="scissors":
+                bot_response.set("I win!")
+                threading.Thread(target=engine_speak("I win!")).start()
+            elif answer=="paper":
+                bot_response.set("Oh i lose")
+                threading.Thread(target=engine_speak("Oh i lose")).start()
+
+        elif user_response=="paper":
+            if answer=="paper":
+                bot_response.set("Its a tie!")
+                threading.Thread(target=engine_speak("Its a tie!")).start()
+            elif answer=="scissors":
+                bot_response.set("I win!")
+                threading.Thread(target=engine_speak("I win!")).start()
+            elif answer=="rock":
+                bot_response.set("Oh i lose")
+                threading.Thread(target=engine_speak("Oh i lose")).start()
+
+        elif user_response=="scissors":
+            if answer=="scissors":
+                bot_response.set("Its a tie!")
+                threading.Thread(target=engine_speak("Its a tie!")).start()
+            elif answer=="paper":
+                bot_response.set("I win!")
+                threading.Thread(target=engine_speak("I win!")).start()
+            elif answer=="rock":
+                bot_response.set("Oh i lose")
+                threading.Thread(target=engine_speak("Oh i lose")).start()
+        else:
+            bot_response.set("You spoke late cheater")
+            threading.Thread(target=engine_speak("You spoke late cheater")).start()
+
+def pause(n):
+    time.sleep(n)
+
 
 def whatsapppopup(): #whatsappp screen switch
     global wcount
@@ -394,12 +451,22 @@ person_obj.name = ""
 engine = pyttsx3.init()
 
 
-#******************POPUPSCREEN**************************
+#******************WHATSAPPPOPUPSCREEN**************************
+whatsappcolor = '#25D366'
 popupScreen = Frame(window,width = 400, height = 500, bg = bgcolor)
 number_entry = Entry(popupScreen, textvariable = receiver_num)
-number_entry.place(x=180,y=100)
+number_entry.place(x=200,y=100)
 message_entry = Entry(popupScreen, textvariable = receiver_message)
 message_entry.place(x=200,y=200)
+popup_txt = Label(popupScreen,text = "Whatsapp Details", bg = '#0f212c')
+popup_txt.config(font=("",15),fg = 'white')
+popup_txt.pack(side = "top")
+number_entry_txt= Label(popupScreen, text="Enter the number",bg = '#0f212c')
+number_entry_txt.config(fg='white')
+number_entry_txt.place(x = 50, y = 100)
+message_txt = Label(popupScreen,text = "Etner the message", bg = '#0f212c')
+message_txt.config(fg='white')
+message_txt.place(x=50,y=200)
 submit_btn = Button(popupScreen,text = "Submit", command = lambda: submit())
 submit_btn.place(x=300,y=450)
 back = Button(popupScreen, text = "back", command = lambda: tohomescreen())
@@ -413,7 +480,8 @@ settingScreen = Frame(window,width = 400, height = 500, bg = bgcolor)
 back = Button(settingScreen, text = "back", command = lambda: tohomescreen())
 back.config(font=("Courier", 8))
 back.place(x=50, y =450)
-canvas3 = Canvas(settingScreen,width=500,height=50,bg = '#0f212c').place(x=-10,y=-20)
+#line = Label(settingScreen,width=400,height=1,bd=0,bg='white')
+#line.place(x=0,y=30)
 setting_txt = Label(settingScreen,text = "Settings", bg = '#0f212c')
 setting_txt.config(font=("",15),fg = 'white')
 setting_txt.pack(side = "top")
@@ -455,7 +523,7 @@ bot_label = Label(homeScreen, textvariable = bot_response, bg = '#0073cb')
 bot_label.config(font=("", 10))
 bot_response.set("")
 bot_label.place(x=20, y=150 , anchor = 'w')
-canvas = Frame(homeScreen, bg ='#b3b4b1', width = 400 ,height = 200, bd = 0) #grey canvas
+canvas = Label(homeScreen, bg ='#b3b4b1', width = 400 ,height = 200, bd = 0) #grey canvas
 canvas.place(y=380)
 bot_label_confirmation = Label(homeScreen , textvariable = bot_confirmation , bg = '#162937')
 bot_label_confirmation.config(font=("", 15) , fg = 'white' ,bd = 15)
