@@ -361,10 +361,10 @@ def respond(voice_data): #set of commands it responds to
             if answer=="rock":
                 bot_response.set("Its a tie!")
                 threading.Thread(target=engine_speak("Its a tie!")).start()
-            elif answer=="scissors":
+            elif answer=="paper":
                 bot_response.set("I win!")
                 threading.Thread(target=engine_speak("I win!")).start()
-            elif answer=="paper":
+            elif answer=="scissors":
                 bot_response.set("Oh i lose")
                 threading.Thread(target=engine_speak("Oh i lose")).start()
 
@@ -383,10 +383,10 @@ def respond(voice_data): #set of commands it responds to
             if answer=="scissors":
                 bot_response.set("Its a tie!")
                 threading.Thread(target=engine_speak("Its a tie!")).start()
-            elif answer=="paper":
+            elif answer=="rock":
                 bot_response.set("I win!")
                 threading.Thread(target=engine_speak("I win!")).start()
-            elif answer=="rock":
+            elif answer=="paper":
                 bot_response.set("Oh i lose")
                 threading.Thread(target=engine_speak("Oh i lose")).start()
         else:
