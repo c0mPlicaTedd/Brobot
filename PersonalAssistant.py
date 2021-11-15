@@ -79,13 +79,6 @@ def tohomescreen(): #function made to fix a bit of lag
 def tosettingscreen(): #function made to fix a bit of lag
     swap(settingScreen)
 
-
-def engine_speak(text): #speaks the replies
-    text = str(text)
-    threading.Thread(target=engine.say(text)).start()
-    threading.Thread(target=engine.runAndWait()).start()
-
-
 def record_audio(ask=""): #records audio from your mic
     with sr.Microphone() as source: 
         if ask:
@@ -119,7 +112,7 @@ def engine_speak(audio_string): #bot speaking function and properties
     audio_string = str(audio_string)
     engine = pyttsx3.init()
     voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[1].id)
+    engine.setProperty('voice', voices[0].id)
     if voice == 'Female':
         engine.setProperty('voice', voices[0].id)
     engine.setProperty('rate', 150)
@@ -138,37 +131,31 @@ def respond(voice_data): #set of commands it responds to
         greetings = ["hey", "hey, what's up?", "I'm listening", "how can I help you?", "hello"]
         greet = random.randint(0,len(greetings)-1)
         bot_response.set(greetings[greet])
-        window.update()
         threading.Thread(target=engine_speak(greetings[greet])).start()
 
     
     if 'what is your name' in voice_data: #tells you his name
             bot_response.set(f"My name is {brobot_obj.name}. what's your name?")
-            window.update()
             threading.Thread(target=engine_speak(f"My name is {brobot_obj.name}. what's your name?")).start() #incase you haven't provided your name.
 
     if 'my name is' in voice_data: #remembers your name
         person_name = voice_data.split("is")[-1].strip()
         bot_response.set("okay, i will remember that " + person_name)
-        window.update()
         threading.Thread(target=engine_speak("okay, i will remember that " + person_name)).start()
         person_obj.setName(person_name) # remember name in person object
     
     if 'what is my name' in voice_data: #tells you your name, if told
         bot_response.set("Your name must be " + person_obj.name)
-        window.update()
         threading.Thread(target=engine_speak("Your name must be " + person_obj.name)).start()
     
     if 'change your name to' in voice_data: #changes his name to xyz
         asis_name = voice_data.split("to")[-1].strip()
         bot_response.set("okay, i will remember that my name is " + asis_name)
-        window.update()
         threading.Thread(target=engine_speak("okay, i will remember that my name is " + asis_name)).start()
         brobot_obj.setName(asis_name) # remember name in asis object
 
-    if voice_data in ["how are you","how are you doing"]: #some random personal health answers
+    if isContain(voice_data,['how are you',"how are you doing"]): #some random personal health answers
         bot_response.set("I'm very well, thanks for asking " + person_obj.name)
-        window.update()
         threading.Thread(target=engine_speak("I'm very well, thanks for asking " + person_obj.name)).start()
 
     
@@ -176,7 +163,6 @@ def respond(voice_data): #set of commands it responds to
         current_time = datetime.datetime.now()
         time = current_time.strftime("%H") + " hours and " + current_time.strftime("%M") + " minutes"
         bot_response.set(time)
-        window.update()
         threading.Thread(target=engine_speak(time)).start()
 
     if 'search for' in voice_data and 'youtube' not in voice_data: #searches for xyz thing on google
@@ -184,7 +170,6 @@ def respond(voice_data): #set of commands it responds to
         url = "https://google.com/search?q=" + search_term
         webbrowser.get().open(url)
         bot_response.set("Here is what I found for" + search_term + " on google")
-        window.update()
         threading.Thread(target=engine_speak("Here is what I found for" + search_term + " on google")).start()
     
     if 'youtube' in voice_data: #searches for xyz thing on youtube
@@ -193,7 +178,6 @@ def respond(voice_data): #set of commands it responds to
         url = "https://www.youtube.com/results?search_query=" + search_term
         webbrowser.get().open(url)
         bot_response.set("Here is what I found for " + search_term + " on youtube")
-        window.update()
         threading.Thread(target=engine_speak("Here is what I found for " + search_term + " on youtube")).start()
   
     if 'weather' in voice_data: #shows the weather outside
@@ -201,24 +185,21 @@ def respond(voice_data): #set of commands it responds to
         url = "https://www.google.com/search?sxsrf=ACYBGNSQwMLDByBwdVFIUCbQqya-ET7AAA%3A1578847393212&ei=oUwbXtbXDN-C4-EP-5u82AE&q=weather&oq=weather&gs_l=psy-ab.3..35i39i285i70i256j0i67l4j0i131i67j0i131j0i67l2j0.1630.4591..5475...1.2..2.322.1659.9j5j0j1......0....1..gws-wiz.....10..0i71j35i39j35i362i39._5eSPD47bv8&ved=0ahUKEwiWrJvwwP7mAhVfwTgGHfsNDxsQ4dUDCAs&uact=5"
         webbrowser.get().open(url)
         bot_response.set("Here is what I found for on google")
-        window.update()
         threading.Thread(target=engine_speak("Here is what I found for on google")).start()
      
 
     
-    if voice_data in ["toss a coin","flip a coin","coin"]: #tosses a coin
+    if isContain(voice_data,["toss a coin","flip a coin","coin"]): #tosses a coin
         moves=["head", "tails"]   
         cmove=random.choice(moves)
         threading.Thread(target=engine_speak("Tossing...")).start()
         
         threading.Thread(target=engine_speak("Its " + cmove)).start()
         bot_response.set("Its " + cmove)
-        window.update()
 
     
-    if voice_data in ["exit", "quit"]: #exit
+    if isContain(voice_data,["exit", "quit"]): #exit
         bot_response.set("bye")
-        window.update()
         threading.Thread(target=engine_speak("bye")).start()
         threading.Thread(target=exit()).start()
 
@@ -227,59 +208,50 @@ def respond(voice_data): #set of commands it responds to
         url = "https://www.google.com/maps/search/Where+am+I+?/"
         webbrowser.get().open(url)
         bot_response.set("You must be somewhere near here, as per Google maps")
-        window.update()
         threading.Thread(target=engine_speak("You must be somewhere near here, as per Google maps")).start()
 
     
-    if voice_data in ["what is today's date", "what is the date today", "date"]: #today's date
+    if isContain(voice_data,["what is today's date", "what is the date today", "date"]): #today's date
         bot_response.set(today.strftime("%B %d, %Y"))
-        window.update()
         threading.Thread(target=engine_speak(today.strftime("%B %d, %Y"))).start()
 
-    if voice_data in ["great","interesting","wow","awesome","nice"]: #some random replies
+    if isContain(voice_data,["great","interesting","wow","awesome","nice"]): #some random replies
         bot_response.set("I know right")
-        window.update()
         threading.Thread(target=engine_speak("I know right")).start()
     
-    if voice_data in ["thanks","thank","thank you"]: #thanks
+    if isContain(voice_data,["thanks","thank","thank you"]): #thanks
         bot_response.set("You're welcome!")
-        window.update()
         threading.Thread(target=engine_speak("You're welcome!")).start()
      
-    if voice_data in ["open settings", "open setting"]: #open brobot settings
+    if isContain(voice_data,["open settings", "open setting"]): #open brobot settings
         bot_response.set("Opening settings...")
-        window.update()
         threading.Thread(target=engine_speak("Opening settings...")).start()
         threading.Thread(target=swap(settingScreen)).start()
 
     
-    if voice_data in ["go back", "go back to home screen", "return to home screen"]: #return to brobot homescreen
+    if isContain(voice_data,["go back", "go back to home screen", "return to home screen"]) : #return to brobot homescreen
         bot_response.set("Returning to home screen.")
-        window.update()
         threading.Thread(target=engine_speak("Returning to home screen .")).start()
         threading.Thread(target=swap(homeScreen)).start()
               
-    if voice_data in ["open notepad","write this down","note","take a note"]: #opens notepad and notes whatever u say
+    if isContain(voice_data,["open notepad","write this down","note","take a note"]): #opens notepad and notes whatever u say
         date = datetime.datetime.now()
         file_name = str(date).replace(":","-")+ "-note.txt"
         bot_response.set("What do you want me to note down?")
-        window.update()
         threading.Thread(target=engine_speak("What do you want me to note down?")).start()
         text = record_audio("")
         with open (file_name,"w") as f:
             f.write(text)
         threading.Thread(target=subprocess.Popen(["notepad.exe",file_name])).start()
     
-    if voice_data in ["open zoom","class time"]: #opens zoom
+    if isContain(voice_data,["open zoom","class time"]): #opens zoom
         bot_response.set("Opening zoom...")
-        window.update()
         threading.Thread(target=engine_speak("Opening zoom")).start()
         zoom = r"C:\Users\Jash\AppData\Roaming\Zoom\bin\zoom.exe"
         threading.Thread(target=subprocess.Popen(zoom)).start()
 
-    if voice_data in ["calculate","open calculator","math"]: #opens calculator
+    if isContain(voice_data,["calculate","open calculator","math"]): #opens calculator
         bot_response.set("Opening calculator...")
-        window.update()
         threading.Thread(target=engine_speak("Opening calculator")).start()
         calculator = "C:\Windows\System32\calc.exe"
         threading.Thread(target=subprocess.Popen(calculator)).start()
@@ -289,9 +261,8 @@ def respond(voice_data): #set of commands it responds to
         threading.Thread(target=engine_speak("Rolling...")).start()
         bot_response.set("Its "+str(number))
         threading.Thread(target=engine_speak("Its "+str(number))).start()
-        window.update()
 
-    if voice_data in ["sub count","what is my sub count","how many subscribers do i have","how many subs do i have"]: #tells you my sub count
+    if isContain(voice_data,["sub count","what is my sub count","how many subscribers do i have","how many subs do i have"]): #tells you my sub count
         bot_response.set("Let me check")
         threading.Thread(target=engine_speak("Let me check")).start()
         url = "https://www.youtube.com/c/c0mplicated"
@@ -299,7 +270,6 @@ def respond(voice_data): #set of commands it responds to
         subcount = selenium(url,"subscriber-count")
         bot_response.set("You have "+subcount)
         threading.Thread(target=engine_speak("You have "+str(subcount))).start()
-        window.update()
         driver.close()
 
     if "whatsapp" in voice_data: #send message using whatsapp, must be logged in
@@ -442,6 +412,11 @@ def saved(): #settings saved button
     #print(voice)
     window.update()
 
+def isContain(txt, lst):
+	for word in lst:
+		if word in txt:
+			return True
+	return False
 
 today = date.today()
 person_obj = person()
@@ -545,7 +520,7 @@ threading.Thread(target=homeScreen.tkraise()).start() #raise directly to home wi
 
 def voice(): #listen and record and respond to the voice - infinite loop
         global voice_data
-        while(True):
+        while True:
             voice_data = record_audio("")
             threading.Thread(target=respond(voice_data)).start()
 
