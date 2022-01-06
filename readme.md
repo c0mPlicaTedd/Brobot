@@ -1,0 +1,1 @@
+Just a basic personal assitant who talks to you and does some basic tasks for you. It was my first project, the code is not written very well and also the tkinter ui is very laggy but it does work properly.
