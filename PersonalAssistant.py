@@ -1,6 +1,3 @@
-import math
-import tkinter
-import ttk
 from pyaudio import paUInt8
 import speech_recognition as sr # recognise speech
 import random # get time details
