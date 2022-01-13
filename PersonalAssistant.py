@@ -434,5 +434,3 @@ def voice():
                 threading.Thread(target=respond(voice_data)).start()
 
 threading.Thread(target=voice()).start()
-
-
