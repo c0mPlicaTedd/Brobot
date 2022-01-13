@@ -81,10 +81,13 @@ def recordAudio(ask=""):
             threading.Thread(target=user_response.set(voice_data)).start() 
             threading.Thread(target=window.update()).start()
         except sr.UnknownValueError: 
-            print("I did not get that!")
+            print("Brobot: I did not get that!")
         except sr.RequestError:
-            setBotsReaction('Sorry, the service is down') 
-        print(">>", voice_data.lower()) 
+            setBotsReaction('Sorry, the service is down')
+        if(person_obj.name == ""): 
+         print(f"User: {voice_data.lower()}") 
+        else:
+            print(f"{person_obj.name}: {voice_data.lower()}")
         
         
         return voice_data.lower()
@@ -96,6 +99,7 @@ def findThroughSelenium(url,id):
 
 def setBotsReaction(message):
     bot_response.set(message)
+    print(f"Brobot: {message}")
     threading.Thread(target=engineSpeak(message)).start()
 
 
@@ -428,9 +432,7 @@ if __name__ == '__main__':
             while True:
                 voice_data = recordAudio("")
                 threading.Thread(target=respond(voice_data)).start()
-                #window.mainloop() pls check if this works here
 
     threading.Thread(target=voice()).start()
 
-    threading.Thread(target=window.mainloop()).start()  
 
