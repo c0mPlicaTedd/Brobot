@@ -15,7 +15,7 @@ def basic(voice_data): #basic math functions +-*/^
     voice_data = voice_data.replace("raised to","**")
     voice_data = voice_data.replace(" ","")
     final = eval(voice_data)
-    return round(final)
+    return round(final,2)
 
 def factorial(n): #for factorials
     

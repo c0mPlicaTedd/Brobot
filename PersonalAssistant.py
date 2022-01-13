@@ -20,7 +20,7 @@ import datetime
 from tkinter import colorchooser
 from pynput.keyboard import Key, Controller
 import mathfunctions
-
+import pyautogui
 window = Tk()
 
 global bot_response
@@ -105,7 +105,7 @@ def engineSpeak(audio_string):
     engine = pyttsx3.init()
     voices = engine.getProperty('voices')
     engine.setProperty('voice', voices[0].id)
-    if voice == 'Male':
+    if voice == 'Female':
         engine.setProperty('voice', voices[1].id) #Some bug here, its not working properly
     engine.setProperty('rate', 150)
     engine.setProperty('volume', volume)
@@ -177,7 +177,7 @@ def respond(voice_data):
     
     if checkIfContains(voice_data,["what is today's date", "what is the date today", "date"]): setBotsReaction(today.strftime("%B %d, %Y"))
 
-    if checkIfContains(voice_data,["great","interesting","wow","awesome","nice"]): setBotsReaction("I know right!S")
+    if checkIfContains(voice_data,["great","interesting","wow","awesome","nice"]): setBotsReaction("I know right!")
     
     if checkIfContains(voice_data,["thanks","thank","thank you"]): setBotsReaction("You're welcome!")
      
@@ -225,11 +225,12 @@ def respond(voice_data):
         setBotsReaction("Okay, loading things up.")
         whatsappPopUp()
 
-    if "what is" in voice_data and "factorial" not in voice_data and "root" not in voice_data and checkIfContains(voice_data,['plus','minus','multiply','x','into','times','multiplied by','divided by','to the power of','raise to','raised to']):
-        try:
+    if "what is" in voice_data and "factorial" not in voice_data and "root" not in voice_data and checkIfContains(voice_data,['+','-','/','plus','minus','multiply','x','into','times','multiplied by','divided by','to the power of','raise to','raised to']):
+        #try:
             result = mathfunctions.basic(voice_data)
+            print(result)
             setBotsReaction(result)
-        except Exception: setBotsReaction("Can you say that again?")
+        #except Exception: setBotsReaction("Can you say that again?")
 
     if "what is" in voice_data and "factorial" in voice_data:
         try:
@@ -293,10 +294,15 @@ def submit():
     url = f'https://web.whatsapp.com/send?phone={receiver_number}&text={receiver_message}'
     webbrowser.get().open(url)
     swap(homeScreen)
-    time.sleep(10)
+    time.sleep(14)
+    pyautogui.click(1327,641,button="left")
+    time.sleep(1)
     k = Controller()
     k.press(Key.enter)
     setBotsReaction("Message sent")
+    number_entry.delete("0","end")
+    message_entry.delete("0","end")
+    window.update()
 
     
 def ifSettingsSaved(): 
@@ -307,7 +313,7 @@ def ifSettingsSaved():
     volume = (volume_slider.get()/100)
     theme = var.get()
     if theme == 1: uiBackgroundColour = "#0f212c"
-    if theme == 2: uiBackgroundColour = "white"
+    if theme == 2: uiBackgroundColour = "#ffffff"
     threading.Thread(target=settingScreen.update()).start()
     threading.Thread(target=homeScreen.update()).start()
     setBotsReaction("Saved.")
