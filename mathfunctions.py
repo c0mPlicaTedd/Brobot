@@ -28,14 +28,10 @@ def factorial(n): #for factorials
 def roots(voice_data): #for nth root
     print("in roots")
     voice_data=voice_data.replace("what is","")
-    print(voice_data)
-    voice_data=voice_data.replace("root","")
-    print(voice_data)
-    exp = voice_data.split('of')[0]
-    print(exp)
+    voice_data=voice_data.replace("of","")
+    voice_data=voice_data.replace(" ","")
+    exp = voice_data.split('root')[0]
     rexp = float(1/float(exp))
-    print(rexp)
-    base = voice_data.split('of')[1]
-    print(base)
+    base = voice_data.split('root')[1]
     result = round((float(base)**rexp),2)
     return (result)

@@ -229,12 +229,11 @@ def respond(voice_data):
         setBotsReaction("Okay, loading things up.")
         whatsappPopUp()
 
-    if "what is" in voice_data and "factorial" not in voice_data and "root" not in voice_data and checkIfContains(voice_data,['+','-','/','plus','minus','multiply','x','into','times','multiplied by','divided by','to the power of','raise to','raised to']):
-        #try:
+    if "what is" in voice_data and "factorial" not in voice_data and "root" not in voice_data and checkIfContains(voice_data,['+','-','/','^','plus','minus','multiply','x','into','times','multiplied by','divided by','to the power of','raise to','raised to']):
+        try:
             result = mathfunctions.basic(voice_data)
-            print(result)
             setBotsReaction(result)
-        #except Exception: setBotsReaction("Can you say that again?")
+        except Exception: setBotsReaction("Brobot: Can you say that again?")
 
     if "what is" in voice_data and "factorial" in voice_data:
         try:
@@ -250,6 +249,7 @@ def respond(voice_data):
     if "what is" in voice_data and "root" in voice_data:
         try:
             result = mathfunctions.roots(voice_data)
+            print('saying from roots functions')
             setBotsReaction(result)
         except Exception: setBotsReaction("Can you say that again?")
 
@@ -337,102 +337,102 @@ if __name__ == '__main__':
     engine = pyttsx3.init()
 
 
-    #******************WHATSAPPPOPUPSCREEN**************************
-    whatsappcolor = '#25D366'
-    popupScreen = Frame(window,width = 400, height = 500, bg = uiBackgroundColour)
-    number_entry = Entry(popupScreen, textvariable = receiver_number)
-    number_entry.place(x=200,y=100)
-    message_entry = Entry(popupScreen, textvariable = receiver_message)
-    message_entry.place(x=200,y=200)
-    popup_txt = Label(popupScreen,text = "Whatsapp Details", bg = '#0f212c')
-    popup_txt.config(font=("",15),fg = 'white')
-    popup_txt.pack(side = "top")
-    number_entry_txt= Label(popupScreen, text="Enter the number",bg = '#0f212c')
-    number_entry_txt.config(fg='white')
-    number_entry_txt.place(x = 50, y = 100)
-    message_txt = Label(popupScreen,text = "Etner the message", bg = '#0f212c')
-    message_txt.config(fg='white')
-    message_txt.place(x=50,y=200)
-    submit_btn = Button(popupScreen,text = "Submit", command = lambda: submit())
-    submit_btn.place(x=300,y=450)
-    back = Button(popupScreen, text = "back", command = lambda: tohomescreen())
-    back.config(font=("Courier", 8))
-    back.place(x=50, y =450)
-    #************************************************************
+#******************WHATSAPPPOPUPSCREEN**************************
+whatsappcolor = '#25D366'
+popupScreen = Frame(window,width = 400, height = 500, bg = uiBackgroundColour)
+number_entry = Entry(popupScreen, textvariable = receiver_number)
+number_entry.place(x=200,y=100)
+message_entry = Entry(popupScreen, textvariable = receiver_message)
+message_entry.place(x=200,y=200)
+popup_txt = Label(popupScreen,text = "Whatsapp Details", bg = '#0f212c')
+popup_txt.config(font=("",15),fg = 'white')
+popup_txt.pack(side = "top")
+number_entry_txt= Label(popupScreen, text="Enter the number",bg = '#0f212c')
+number_entry_txt.config(fg='white')
+number_entry_txt.place(x = 50, y = 100)
+message_txt = Label(popupScreen,text = "Etner the message", bg = '#0f212c')
+message_txt.config(fg='white')
+message_txt.place(x=50,y=200)
+submit_btn = Button(popupScreen,text = "Submit", command = lambda: submit())
+submit_btn.place(x=300,y=450)
+back = Button(popupScreen, text = "back", command = lambda: tohomescreen())
+back.config(font=("Courier", 8))
+back.place(x=50, y =450)
+#************************************************************
 
 
-    #**********************SETTING SCREEN****************************************
-    settingScreen = Frame(window,width = 400, height = 500, bg = uiBackgroundColour)
-    back = Button(settingScreen, text = "back", command = lambda: tohomescreen())
-    back.config(font=("Courier", 8))
-    back.place(x=50, y =450)
-    #line = Label(settingScreen,width=400,height=1,bd=0,bg='white')
-    #line.place(x=0,y=30)
-    setting_txt = Label(settingScreen,text = "Settings", bg = '#0f212c')
-    setting_txt.config(font=("",15),fg = 'white')
-    setting_txt.pack(side = "top")
-    save = Button(settingScreen,text='save',command =lambda: ifSettingsSaved())
-    save.config(font=("Courier",8))
-    save.place(x=300,y=450)
-    bot_voices = ['Male','Female']
-    voicevar = StringVar(window)
-    voicevar.set('Male')
-    voices_menu = OptionMenu(settingScreen,voicevar,*bot_voices)
-    voice_txt= Label(settingScreen, text="Bot Voice",bg = '#0f212c')
-    voice_txt.config(fg='white')
-    voice_txt.place(x = 100, y = 100)
-    voices_menu.place(x=180, y = 100)
-    volume_slider = Scale(settingScreen, from_=0 ,to = 100,orient = 'horizontal')
-    volume_slider.set("100")
-    volume_txt = Label(settingScreen,text = "Bot Volume", bg ='#0f212c')
-    volume_txt.config(fg='white')
-    volume_txt.place(x=50,y=200)
-    volume_slider.place(x=200,y=200)
-    var = IntVar()
-    darktheme_btn = Radiobutton(settingScreen,text="Dark",variable= var,value = 1).place(x=150,y=300)
-    lighttheme_btn = Radiobutton(settingScreen,text="Light",variable= var,value = 2).place(x=250,y=300)
-    var.set(1)
-    theme_txt=Label(settingScreen,text="Theme", bg ='#0f212c')
-    theme_txt.config(fg="white")
-    theme_txt.place(x=50,y=300)
-    assitant_voice_text = Text(settingScreen)
-    #***************************************************************************
+ #**********************SETTING SCREEN****************************************
+settingScreen = Frame(window,width = 400, height = 500, bg = uiBackgroundColour)
+back = Button(settingScreen, text = "back", command = lambda: tohomescreen())
+back.config(font=("Courier", 8))
+back.place(x=50, y =450)
+#line = Label(settingScreen,width=400,height=1,bd=0,bg='white')
+#line.place(x=0,y=30)
+setting_txt = Label(settingScreen,text = "Settings", bg = '#0f212c')
+setting_txt.config(font=("",15),fg = 'white')
+setting_txt.pack(side = "top")
+save = Button(settingScreen,text='save',command =lambda: ifSettingsSaved())
+save.config(font=("Courier",8))
+save.place(x=300,y=450)
+bot_voices = ['Male','Female']
+voicevar = StringVar(window)
+voicevar.set('Male')
+voices_menu = OptionMenu(settingScreen,voicevar,*bot_voices)
+voice_txt= Label(settingScreen, text="Bot Voice",bg = '#0f212c')
+voice_txt.config(fg='white')
+voice_txt.place(x = 100, y = 100)
+voices_menu.place(x=180, y = 100)
+volume_slider = Scale(settingScreen, from_=0 ,to = 100,orient = 'horizontal')
+volume_slider.set("100")
+volume_txt = Label(settingScreen,text = "Bot Volume", bg ='#0f212c')
+volume_txt.config(fg='white')
+volume_txt.place(x=50,y=200)
+volume_slider.place(x=200,y=200)
+var = IntVar()
+darktheme_btn = Radiobutton(settingScreen,text="Dark",variable= var,value = 1).place(x=150,y=300)
+lighttheme_btn = Radiobutton(settingScreen,text="Light",variable= var,value = 2).place(x=250,y=300)
+var.set(1)
+theme_txt=Label(settingScreen,text="Theme", bg ='#0f212c')
+theme_txt.config(fg="white")
+theme_txt.place(x=50,y=300)
+assitant_voice_text = Text(settingScreen)
+#***************************************************************************
 
-    #****************************HOME SCREEN***********************************
-    homeScreen = Frame(window,width = 400, height = 500, bg = uiBackgroundColour)
-    window.title("Brobot")
-    user_label = Label(homeScreen, textvariable = user_response, bg = '#41a2dc') 
-    user_label.config(font=("", 10))
-    user_response.set('')
-    user_label.place(x = 380 , y= 100 , anchor = 'e')
-    bot_label = Label(homeScreen, textvariable = bot_response, bg = '#0073cb')
-    bot_label.config(font=("", 10))
-    bot_response.set("")
-    bot_label.place(x=20, y=150 , anchor = 'w')
-    canvas = Label(homeScreen, bg ='#b3b4b1', width = 400 ,height = 200, bd = 0) #grey canvas
-    canvas.place(y=380)
-    bot_label_confirmation = Label(homeScreen , textvariable = bot_confirmation , bg = '#162937')
-    bot_label_confirmation.config(font=("", 15) , fg = 'white' ,bd = 15)
-    bot_confirmation.set("Listening...")
-    bot_label_confirmation.place(x=125, y= 410)
-    settings = Button(homeScreen, text = "settings", command = lambda: tosettingscreen())
-    settings.config(font=("", 8))
-    settings.place(x=310, y =425)
-    #****************************************************************************
+#****************************HOME SCREEN***********************************
+homeScreen = Frame(window,width = 400, height = 500, bg = uiBackgroundColour)
+window.title("Brobot")
+user_label = Label(homeScreen, textvariable = user_response, bg = '#41a2dc') 
+user_label.config(font=("", 10))
+user_response.set('')
+user_label.place(x = 380 , y= 100 , anchor = 'e')
+bot_label = Label(homeScreen, textvariable = bot_response, bg = '#0073cb')
+bot_label.config(font=("", 10))
+bot_response.set("")
+bot_label.place(x=20, y=150 , anchor = 'w')
+canvas = Label(homeScreen, bg ='#b3b4b1', width = 400 ,height = 200, bd = 0) #grey canvas
+canvas.place(y=380)
+bot_label_confirmation = Label(homeScreen , textvariable = bot_confirmation , bg = '#162937')
+bot_label_confirmation.config(font=("", 15) , fg = 'white' ,bd = 15)
+bot_confirmation.set("Listening...")
+bot_label_confirmation.place(x=125, y= 410)
+settings = Button(homeScreen, text = "settings", command = lambda: tosettingscreen())
+settings.config(font=("", 8))
+settings.place(x=310, y =425)
+#****************************************************************************
 
 
-    for frame in (homeScreen,settingScreen,popupScreen):
+for frame in (homeScreen,settingScreen,popupScreen):
         frame.grid(row=0,column=0, sticky = 'news')
 
-    threading.Thread(target=homeScreen.tkraise()).start()
+threading.Thread(target=homeScreen.tkraise()).start()
 
 
-    def voice():
+def voice():
             global voice_data
             while True:
                 voice_data = recordAudio("")
                 threading.Thread(target=respond(voice_data)).start()
 
-    threading.Thread(target=voice()).start()
+threading.Thread(target=voice()).start()
 
 
